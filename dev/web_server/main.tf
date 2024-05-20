@@ -17,11 +17,10 @@ resource "aws_security_group" "web_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = []
-    security_groups = [var.bastion_sg_id]
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [var.linux_bastion_sg_id, var.windows_bastion_sg_id]
   }
 
   ingress {
@@ -38,7 +37,7 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(var.tags, { Name = "Web Dev Security Group" })
+  tags = merge(var.tags, { Name = "Web_Dev Security Group" })
 }
 
 # Web Server Instance
@@ -49,5 +48,5 @@ resource "aws_instance" "web" {
   subnet_id              = var.private_subnet_id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
-  tags = merge(var.tags, { Name = "Web Dev" })
+  tags = merge(var.tags, { Name = "Web_Dev" })
 }

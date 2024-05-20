@@ -12,13 +12,13 @@ provider "aws" {
   region = var.region
 }
 
-# Security Group for Bastion
-resource "aws_security_group" "bastion_sg" {
+# Security Group for Windows Bastion
+resource "aws_security_group" "windows_bastion_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 3389
+    to_port     = 3389
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -30,16 +30,16 @@ resource "aws_security_group" "bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(var.tags, { Name = "Linux_Bastion_Dev Security Group" })
+  tags = merge(var.tags, { Name = "Windows_Bastion_Dev Security Group" })
 }
 
-# Bastion Instance
-resource "aws_instance" "bastion" {
+# Windows Bastion Instance
+resource "aws_instance" "windows_bastion" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
   key_name               = var.key_name
   subnet_id              = var.public_subnet_id
-  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+  vpc_security_group_ids = [aws_security_group.windows_bastion_sg.id]
 
-  tags = merge(var.tags, { Name = "Linux_Bastion_Dev" })
+  tags = merge(var.tags, { Name = "Windows_Bastion_Dev" })
 }

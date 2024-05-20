@@ -77,3 +77,21 @@ variable "web_key_name" {
   type        = string
   default     = "Web_Dev"
 }
+
+variable "windows_bastion_ami_id" {
+  description = "The AMI ID for the Windows bastion host"
+  type        = string
+  default     = "ami-0c0ec0a3a3a4c34c0" # Replace with an actual Windows AMI ID
+}
+
+variable "windows_bastion_instance_type" {
+  description = "The instance type for the Windows bastion host"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "windows_bastion_key_name" {
+  description = "The name of the key pair to use for the Windows bastion host"
+  type        = string
+  default     = "Windows_Bastion_Dev"
+}
