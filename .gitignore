@@ -1,0 +1,42 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.log
+
+# Ignore Terraform lock files
+.terraform.lock.hcl
+
+# Ignore Terraform subdirectories
+**/.terraform/
+
+# Ignore temporary files created by editors or OS
+*.swp
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Ignore specific directories
+dev/.terraform/
+dev/terraform.tfstate
+dev/terraform.tfstate.backup
+
+prod/.terraform/
+prod/terraform.tfstate
+prod/terraform.tfstate.backup
+
+# Ignore specific file types
+*.tfvars
+*.tfvars.json
+
+# Ignore VPC files
+dev/vpc/*.tfstate
+prod/vpc/*.tfstate
+
+# Ignore Windows Bastion files
+dev/windows_bastion/*.tfstate
+prod/windows_bastion/*.tfstate
+
+# Ignore specific provider files
+dev/providers.tf
+prod/providers.tf
