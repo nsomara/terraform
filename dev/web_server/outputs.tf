@@ -1,9 +1,7 @@
 output "web_instance_id" {
-  description = "The ID of the web server instance"
-  value       = aws_instance.web.id
+  value = aws_instance.web_server.id
 }
 
 output "web_private_ip" {
-  description = "The private IP of the web server instance"
-  value       = aws_instance.web.private_ip
+  value = aws_instance.web_server.private_ip
 }

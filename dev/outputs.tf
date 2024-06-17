@@ -37,3 +37,4 @@ output "web_private_ip" {
   description = "The private IP of the web server instance"
   value       = module.web_server.web_private_ip
 }
+

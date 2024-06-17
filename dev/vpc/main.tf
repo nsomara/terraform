@@ -12,59 +12,85 @@ provider "aws" {
   region = var.region
 }
 
-# Create VPC
 resource "aws_vpc" "dev_vpc" {
-  cidr_block = var.cidr_block
-  tags = merge(var.tags, { Name = var.vpc_name })
+  cidr_block = var.vpc_cidr_block
+  tags       = var.tags
 }
 
-# Create Internet Gateway
-resource "aws_internet_gateway" "dev_igw" {
-  vpc_id = aws_vpc.dev_vpc.id
-  tags   = merge(var.tags, { Name = "${var.vpc_name}-igw" })
-}
-
-# Create Public Subnet
 resource "aws_subnet" "dev_public_subnet" {
-  vpc_id            = aws_vpc.dev_vpc.id
-  cidr_block        = var.public_subnet_cidr
+  vpc_id                  = aws_vpc.dev_vpc.id
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
-  availability_zone = var.availability_zone
-  tags             = merge(var.tags, { Name = "${var.vpc_name}-public-subnet" })
+  tags                    = var.tags
 }
 
-# Create Private Subnet
 resource "aws_subnet" "dev_private_subnet" {
   vpc_id            = aws_vpc.dev_vpc.id
   cidr_block        = var.private_subnet_cidr
   availability_zone = var.availability_zone
-  tags             = merge(var.tags, { Name = "${var.vpc_name}-private-subnet" })
+  tags              = var.tags
 }
 
-# Create Public Route Table
+resource "aws_internet_gateway" "dev_igw" {
+  vpc_id = aws_vpc.dev_vpc.id
+  tags   = var.tags
+}
+
 resource "aws_route_table" "dev_public_rt" {
   vpc_id = aws_vpc.dev_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.dev_igw.id
   }
-  tags = merge(var.tags, { Name = "${var.vpc_name}-public-rt" })
+  tags = var.tags
 }
 
-# Associate Public Route Table with Public Subnet
 resource "aws_route_table_association" "dev_public_rt_assoc" {
   subnet_id      = aws_subnet.dev_public_subnet.id
   route_table_id = aws_route_table.dev_public_rt.id
 }
 
-# Create Private Route Table
 resource "aws_route_table" "dev_private_rt" {
   vpc_id = aws_vpc.dev_vpc.id
-  tags   = merge(var.tags, { Name = "${var.vpc_name}-private-rt" })
+  tags   = var.tags
 }
 
-# Associate Private Route Table with Private Subnet
 resource "aws_route_table_association" "dev_private_rt_assoc" {
   subnet_id      = aws_subnet.dev_private_subnet.id
   route_table_id = aws_route_table.dev_private_rt.id
+}
+
+resource "aws_security_group" "public_sg" {
+  vpc_id = aws_vpc.dev_vpc.id
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = var.tags
+}
+
+resource "aws_security_group" "private_sg" {
+  vpc_id = aws_vpc.dev_vpc.id
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = var.tags
 }

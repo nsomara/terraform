@@ -12,22 +12,29 @@ provider "aws" {
   region = var.region
 }
 
-# Security Group for Web Server
+resource "aws_instance" "web_server" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+  subnet_id              = var.private_subnet_id
+  user_data              = data.template_file.web_user_data.rendered
+  iam_instance_profile   = var.ssm_instance_profile_name
+  tags                   = merge(var.tags, { Name = "Web_Dev" })
+}
+
 resource "aws_security_group" "web_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [var.linux_bastion_sg_id, var.windows_bastion_sg_id]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 22
+    to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = []
+    security_groups = [
+      var.linux_bastion_sg_id,
+      var.windows_bastion_sg_id
+    ]
   }
 
   egress {
@@ -37,16 +44,17 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge(var.tags, { Name = "Web_Dev Security Group" })
+  tags = var.tags
 }
 
-# Web Server Instance
-resource "aws_instance" "web" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  subnet_id              = var.private_subnet_id
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
+data "template_file" "web_user_data" {
+  template = file("${path.module}/web_user_data.sh")
+}
 
-  tags = merge(var.tags, { Name = "Web_Dev" })
+output "web_server_id" {
+  value = aws_instance.web_server.id
+}
+
+output "web_server_private_ip" {
+  value = aws_instance.web_server.private_ip
 }

@@ -95,3 +95,39 @@ variable "windows_bastion_key_name" {
   type        = string
   default     = "Windows_Bastion_Dev"
 }
+
+variable "nginx_ami_id" {
+  description = "The AMI ID for the Nginx server"
+  type        = string
+  default     = "ami-01cd4de4363ab6ee8" # Replace with an actual Nginx AMI ID
+}
+
+variable "nginx_instance_type" {
+  description = "The instance type for the Nginx server"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "nginx_key_name" {
+  description = "The name of the key pair to use for the Nginx server"
+  type        = string
+  default     = "Nginx_Dev"
+}
+
+variable "iis_ami_id" {
+  description = "The AMI ID for the Windows IIS server"
+  type        = string
+  default     = "ami-01cd4de4363ab6ee8" # Replace with an actual Windows AMI ID
+}
+
+variable "iis_instance_type" {
+  description = "The instance type for the IIS server"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "iis_key_name" {
+  description = "The name of the key pair to use for the IIS server"
+  type        = string
+  default     = "IIS_Dev"
+}
